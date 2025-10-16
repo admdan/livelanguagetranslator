@@ -1,0 +1,10 @@
+# Core dependencies for LLT prototype
+faster-whisper
+argostranslate==1.9.6
+sounddevice
+soundfile
+websockets
+numpy
+
+# Optional (for future TTS integration)
+piper-tts
