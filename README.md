@@ -26,6 +26,19 @@ git clone https://github.com/admdan/livelanguagetranslator.git
 cd livelanguagetranslator
 ```
 ### 2.  Create a Virtual Environment:
+
+- Make sure you have Python 3.11. If you don't, you can run these in Pycharm terminal:
+
+``` bash
+# Windows (and then follow subsequent steps to accept agreement terms)
+winget install Python.Python.3.11
+
+# macOS (if you have Homebrew)
+brew update
+brew install python@3.11
+python3.11 --version
+```
+
 - Use Python 3.11 (Argos Translate does not yet support 3.13).
 ```bash
 python -m venv .venv
