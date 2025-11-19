@@ -6,4 +6,3 @@ numpy
 pyyaml
 torch
 piper-tts
-#jekhgkedhf
