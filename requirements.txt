@@ -2,9 +2,7 @@
 faster-whisper
 argostranslate==1.9.6
 sounddevice
-soundfile
-websockets
 numpy
-
-# Optional (for future TTS integration)
+pyyaml
+torch
 piper-tts
