@@ -1,0 +1,26 @@
+audio:
+  sample_rate: 16000
+  block_seconds: 0.5
+  device_input_index: null
+
+vad:
+  use_webrtc: false
+  energy_gate: 0.0005
+  pause_timeout: 0.8
+
+asr:
+  model_size: "small"
+  device: "cuda"
+  language: "en"
+  beam_size: 8
+  temperature: 0.0
+  min_conf: 0.7
+
+translate:
+  from_lang: "en"
+  to_lang: "es"
+
+tts:
+  enabled: true
+  voice_path: "models/piper/en_US-lessac-medium.onnx"
+  voice_config: "models/piper/en_US-lessac-medium.onnx.json"
