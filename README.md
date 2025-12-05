@@ -53,9 +53,10 @@ source .venv/bin/activate
 ```
 
 ### 3. Install Dependencies
-#### Option A - Recommended (using requirements.txt):
+#### Option A - Recommended (using PyTorch installation & requirements.txt):
 - Simply run:
 ```bash
+pip install torch==2.9.1 --index-url https://download.pytorch.org/whl/test/cu126
 pip install -r requirements.txt
 ```
 
