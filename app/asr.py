@@ -4,7 +4,7 @@ from faster_whisper import WhisperModel
 class ASR:
     def __init__(self, model_size, device, compute_type=None, language=None, beam_size=5, temperature=0.0):
         if compute_type is None:
-            compute_type = "float16" if device == "cuda" else "int8"
+            compute_type = "float32" if device == "cuda" else "int8"
         self.model = WhisperModel(model_size, device=device, compute_type=compute_type)
         self.language = language
         self.beam_size = beam_size

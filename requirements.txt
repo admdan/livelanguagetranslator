@@ -1,9 +1,26 @@
-# Core dependencies for LLT prototype
-faster-whisper
+# Core dependencies for LLT prototype (GPU-ready)
+
+#PyTorch - install with CUDA 12.6 wheels
+torch==2.9.1
+
+# Whisper ASR (GPU via ctranslate2)
+faster-whisper==1.2.1
+ctranslate2==4.6.1
+
+# Offline translation
 argostranslate==1.9.6
-sounddevice
-numpy
+
+#Numeric + audio stack
+sounddevice>0.5.2,<0.6
+numpy==2.3.4
+soundfile==0.13.1
+
+# Piper TTS
+piper-tts==1.3.0
+
+# VAD
+webrtcvad-wheels==2.0.14
+
+# Config
 pyyaml
-torch
-piper-tts
-webrtcvad-wheels
+
