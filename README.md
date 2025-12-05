@@ -79,7 +79,33 @@ pip install piper-tts
 ```bash
 python setup/argossetup.py
 ```
+Configuration Profiles
 
+LLT now includes multiple configuration profiles stored in the config/ directory.
+Each profile adjusts device usage and model settings to support different hardware environments.
+
+default.yaml – General-purpose settings for most systems.
+
+cpu_safe.yaml – Forces CPU-only mode with lighter ASR settings.
+
+gpu_fast.yaml – Enables GPU acceleration with higher-quality ASR settings.
+
+To run the pipeline with a specific profile:
+
+python -m app.pipeline --profile config/default.yaml
+python -m app.pipeline --profile config/cpu_safe.yaml
+python -m app.pipeline --profile config/gpu_fast.yaml
+
+
+In PyCharm, three Run Configurations are included:
+
+Run Pipeline – Default
+
+Run Pipeline – CPU Safe
+
+Run Pipeline – GPU Fast
+
+These can be selected from the Run Configuration dropdown in the top-right corner of PyCharm.
 ## 🔮 Future Work
 - 🎧 Integrate real-time microphone input and output
 - 🔄 Enable two-way speech conversation simulation
