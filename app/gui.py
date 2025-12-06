@@ -411,8 +411,14 @@ def run_translation_session(profile_path, src_lang, tgt_lang, ui, stop_event, mu
                     # TTS
                     if tts_enabled and translated and not mute_tts:
                         ui.put({"type": "status", "text": "Speaking…"})
+
+                        # Build filename for TTS audio for this phrase
+                        tts_path = os.path.join(record_folder, f"tts_phrase_{phrase_idx - 1:03d}.wav")
+
                         try:
-                            tts_mod.speak(translated, voice_path, voice_cfg)
+                            # Save TTS audio to file
+                            tts_mod.speak(translated, voice_path, voice_cfg, save_path=tts_path)
+                            ui.put({"type": "log", "text": f"Saved TTS audio: {tts_path}"})
                         except Exception as e:
                             ui.put({"type": "log", "text": f"[TTS Error] {e}"})
                         ui.put({"type": "status", "text": "Running…"})
