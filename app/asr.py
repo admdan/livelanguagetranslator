@@ -14,10 +14,10 @@ class ASR:
         """pcm mono float32 [-1,1]; returns dict with text, confidence, segments, timings"""
         t0 = time.time()
 
-        # 🔧 make sure it’s 1D float32 mono
+        # make sure it’s 1D float32 mono
         pcm_fixed = np.asarray(pcm, dtype="float32").reshape(-1)
 
-        # 🔥 call Faster-Whisper directly on the NumPy audio (no temp file, no soundfile)
+        # call Faster-Whisper directly on the NumPy audio (no temp file, no soundfile)
         segments, info = self.model.transcribe(
             pcm_fixed,
             language=self.language,
