@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 import os
 import soundfile as sf
+import yaml
 
 # Imports from pipeline
 from .config import load_config
@@ -37,7 +38,8 @@ class LLTApp(tk.Tk):
         super().__init__()
 
         self.title("Live Language Translator (LLT)")
-        self.geometry("900x600")
+        self.geometry("1150x650")
+        self.minsize(900, 600)
 
         self.ui_queue = queue.Queue()
         self.worker_thread = None
@@ -63,7 +65,7 @@ class LLTApp(tk.Tk):
             textvariable=self.profile_var,
             values=profile_names,
             state="readonly",
-            width=25,
+            width=20,
         )
         self.profile_combo.current(0)
         self.profile_combo.pack(side=tk.LEFT, padx=(0, 10))
@@ -77,10 +79,31 @@ class LLTApp(tk.Tk):
             textvariable=self.direction_var,
             values=dir_names,
             state="readonly",
-            width=25,
+            width=20,
         )
         self.direction_combo.current(0)
         self.direction_combo.pack(side=tk.LEFT, padx=5)
+
+        # Voice selector (depends on profile + target language)
+        ttk.Label(top_frame, text="Voice:").pack(side=tk.LEFT)
+        self.voice_var = tk.StringVar()
+        self.voice_combo = ttk.Combobox(
+            top_frame,
+            textvariable=self.voice_var,
+            values=[],
+            state="readonly",
+            width=40,
+        )
+        self.voice_combo.pack(side=tk.LEFT, padx=5)
+
+        # Keep currently loaded presets for mapping label -> id
+        self.current_voice_presets = []
+
+        # Bind profile combo and direction combo so that changing profile/direction refreshes voices
+        self.profile_combo.bind("<<ComboboxSelected>>", lambda e: self._refresh_voice_choices())
+        self.direction_combo.bind("<<ComboboxSelected>>", lambda e: self._refresh_voice_choices())
+
+        self._refresh_voice_choices()
 
         # Mute TTS checkbox
         self.mute_tts_var = tk.BooleanVar(value=False)
@@ -132,9 +155,14 @@ class LLTApp(tk.Tk):
         mid_frame = ttk.Frame(self, padding=10)
         mid_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-        # Transcription
+        # Make two equal-width columns
+        mid_frame.columnconfigure(0, weight=1, uniform="cols")
+        mid_frame.columnconfigure(1, weight=1, uniform="cols")
+        mid_frame.rowconfigure(0, weight=1)
+
+        # Transcription (left)
         t_frame = ttk.LabelFrame(mid_frame, text="Speech Transcription", padding=5)
-        t_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        t_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 5))
 
         self.transcription_text = tk.Text(t_frame, wrap="word")
         self.transcription_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -142,9 +170,9 @@ class LLTApp(tk.Tk):
         scroll1.pack(side=tk.RIGHT, fill=tk.Y)
         self.transcription_text.configure(yscrollcommand=scroll1.set)
 
-        # Translation
+        # Translation (right)
         tr_frame = ttk.LabelFrame(mid_frame, text="Translated Speech", padding=5)
-        tr_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        tr_frame.grid(row=0, column=1, sticky="nsew", padx=(5, 0))
 
         self.translation_text = tk.Text(tr_frame, wrap="word")
         self.translation_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -198,6 +226,14 @@ class LLTApp(tk.Tk):
         # Read mute TTS setting
         mute_tts = self.mute_tts_var.get()
 
+        # Map selected voice label to preset id
+        selected_label = self.voice_var.get()
+        voice_preset_id = None
+        for p in self.current_voice_presets:
+            if p.get("label", p.get("id")) == selected_label:
+                voice_preset_id = p.get("id")
+                break
+
         self.start_button.config(state=tk.DISABLED)
         self.stop_button.config(state=tk.NORMAL)
         self.status_var.set("Running…")
@@ -205,7 +241,7 @@ class LLTApp(tk.Tk):
         # Start worker thread
         self.worker_thread = threading.Thread(
             target=run_translation_session,
-            args=(profile_path, src_lang, tgt_lang, self.ui_queue, self.stop_event, mute_tts),
+            args=(profile_path, src_lang, tgt_lang, self.ui_queue, self.stop_event, mute_tts, voice_preset_id),
             daemon=True,
         )
         self.worker_thread.start()
@@ -301,9 +337,50 @@ class LLTApp(tk.Tk):
         except Exception as e:
             self.log_var.set(f"Error saving file: {e}")
 
+    def _refresh_voice_choices(self):
+        """Reload available TTS voices based on selected profile + target language."""
+        # Determine selected config profile path
+        selected_prof = self.profile_var.get()
+        profile_path = CONFIG_PROFILES[0][1]
+        for name, path in CONFIG_PROFILES:
+            if selected_prof == name:
+                profile_path = path
+                break
+
+        # Determine target language from direction
+        selected_dir = self.direction_var.get()
+        src_lang, tgt_lang = None, None
+        for name, src, tgt in LANG_DIRECTIONS:
+            if name == selected_dir:
+                src_lang, tgt_lang = src, tgt
+                break
+
+        # Load YAML directly
+        try:
+            with open(profile_path, "r", encoding="utf-8") as f:
+                cfg = yaml.safe_load(f)
+        except Exception:
+            cfg = {}
+
+        tts_section = cfg.get("tts", {})
+        presets_by_lang = tts_section.get("presets", {})
+        lang_presets = presets_by_lang.get(tgt_lang, []) or []
+
+        # Update combobox values
+        labels = [p.get("label", p.get("id", "unknown")) for p in lang_presets]
+        self.current_voice_presets = lang_presets
+
+        self.voice_combo["values"] = labels
+        if labels:
+            # Keep current selection if possible, else default to first
+            current = self.voice_var.get()
+            if current not in labels:
+                self.voice_var.set(labels[0])
+        else:
+            self.voice_var.set("")
 
 # Worker thread pipeline logic
-def run_translation_session(profile_path, src_lang, tgt_lang, ui, stop_event, mute_tts):
+def run_translation_session(profile_path, src_lang, tgt_lang, ui, stop_event, mute_tts, voice_preset_id=None):
 
     # Load chosen profile
     cfg = load_config(default_path=profile_path)
@@ -339,9 +416,37 @@ def run_translation_session(profile_path, src_lang, tgt_lang, ui, stop_event, mu
         temperature=cfg["asr"]["temperature"],
     )
 
-    tts_enabled = cfg["tts"]["enabled"]
-    voice_path  = cfg["tts"]["voice_path"]
-    voice_cfg   = cfg["tts"]["voice_config"]
+    tts_section = cfg.get("tts", {})
+    tts_enabled = tts_section.get("enabled", True)
+
+    # Base fallback
+    voice_path = tts_section.get("voice_path")
+    voice_cfg = tts_section.get("voice_config")
+
+    # Try to resolve from presets
+    presets_by_lang = tts_section.get("presets", {})
+    lang_presets = presets_by_lang.get(tgt_lang, []) if isinstance(presets_by_lang, dict) else []
+
+    chosen = None
+    if voice_preset_id:
+        for p in lang_presets:
+            if p.get("id") == voice_preset_id:
+                chosen = p
+                break
+
+    # If no preset explicitly chosen (edge case), pick first for that language
+    if chosen is None and lang_presets:
+        chosen = lang_presets[0]
+
+    if chosen is not None:
+        voice_path = chosen.get("voice_path", voice_path)
+        voice_cfg = chosen.get("voice_config", voice_cfg)
+        ui.put({"type": "log", "text": f"[TTS] Using voice preset: {chosen.get('label', chosen.get('id'))}"})
+    else:
+        ui.put({"type": "log", "text": "[TTS] No matching preset; using fallback voice."})
+
+    if not voice_path or not voice_cfg:
+        ui.put({"type": "log", "text": "[TTS] Missing voice_path/voice_config; TTS may fail."})
 
     ui.put({"type": "status", "text": f"Ready ({src_lang} → {tgt_lang})"})
     ui.put({"type": "log", "text": "Listening… speak and pause to process."})

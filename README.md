@@ -80,33 +80,41 @@ pip install piper-tts
 ```bash
 python setup/argossetup.py
 ```
-Configuration Profiles
+### 5. Configuration Profiles
 
 LLT now includes multiple configuration profiles stored in the config/ directory.
 Each profile adjusts device usage and model settings to support different hardware environments.
 
-default.yaml – General-purpose settings for most systems.
+- `default.yaml` – General-purpose settings for most systems (automatic).
 
-cpu_safe.yaml – Forces CPU-only mode with lighter ASR settings.
+- `cpu_safe.yaml` – Forces CPU-only mode with lighter ASR settings.
 
-gpu_fast.yaml – Enables GPU acceleration with higher-quality ASR settings.
+- `gpu_fast.yaml` – Enables GPU acceleration with higher-quality ASR settings.
 
-To run the pipeline with a specific profile:
+To run the pipeline in terminal with a specific profile (optional):
+``` bash
+# Must run them separately (copy and run each, not altogether)
 
+# This is the default
 python -m app.pipeline --profile config/default.yaml
+
+# This is the CPU run config
 python -m app.pipeline --profile config/cpu_safe.yaml
+
+# This is the GPU run config (run only if your GPU is NVIDIA and can handle GPU-processing)
 python -m app.pipeline --profile config/gpu_fast.yaml
+```
 
+These run configurations can also be selected from the Run Configuration dropdown in the top-right corner of PyCharm.
 
-In PyCharm, three Run Configurations are included:
+### Recommended: GUI run configuration
 
-Run Pipeline – Default
+To run the translator with the GUI:
+```bash
+python -m app.gui
+```
 
-Run Pipeline – CPU Safe
-
-Run Pipeline – GPU Fast
-
-These can be selected from the Run Configuration dropdown in the top-right corner of PyCharm.
+This will open the GUI window and display the read-to-use real-time translator with selectable language directions, voice models, and save features (raw mic audio, translated TTS audio, speech and translation transcripts). 
 ## 🔮 Future Work
 - 🎧 Integrate real-time microphone input and output
 - 🔄 Enable two-way speech conversation simulation

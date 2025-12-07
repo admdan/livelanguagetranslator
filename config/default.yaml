@@ -22,5 +22,106 @@ translate:
 
 tts:
   enabled: true
+
+  # Default fallback
   voice_path: "models/piper/en_US-lessac-medium.onnx"
   voice_config: "models/piper/en_US-lessac-medium.onnx.json"
+
+  presets:
+    en:
+      - id: "en_us_lessac_f"
+        label: "English (US) – Lessac [F, medium]"
+        gender: "female"
+        accent: "en_US"
+        quality: "medium"
+        voice_path: "models/piper/en_US-lessac-medium.onnx"
+        voice_config: "models/piper/en_US-lessac-medium.onnx.json"
+
+      - id: "en_us_ryan_m"
+        label: "English (US) – Ryan [M, medium]"
+        gender: "male"
+        accent: "en_US"
+        quality: "medium"
+        voice_path: "models/piper/en_US-ryan-medium.onnx"
+        voice_config: "models/piper/en_US-ryan-medium.onnx.json"
+
+      - id: "en_us_john_m"
+        label: "English (US) – John [M, medium]"
+        gender: "male"
+        accent: "en_US"
+        quality: "medium"
+        voice_path: "models/piper/en_US-john-medium.onnx"
+        voice_config: "models/piper/en_US-john-medium.onnx.json"
+
+      - id: "en_us_arctic_m"
+        label: "English (US) – Arctic [M, medium]"
+        gender: "male"
+        accent: "en_US"
+        quality: "medium"
+        voice_path: "models/piper/en_US-arctic-medium.onnx"
+        voice_config: "models/piper/en_US-arctic-medium.onnx.json"
+
+      - id: "en_gb_alan_m"
+        label: "English (UK) – Alan [M, medium]"
+        gender: "male"
+        accent: "en_GB"
+        quality: "medium"
+        voice_path: "models/piper/en_GB-alan-medium.onnx"
+        voice_config: "models/piper/en_GB-alan-medium.onnx.json"
+
+      - id: "en_gb_north_m"
+        label: "English (UK) – Northern male [M, medium]"
+        gender: "male"
+        accent: "en_GB"
+        quality: "medium"
+        voice_path: "models/piper/en_GB-northern_english_male-medium.onnx"
+        voice_config: "models/piper/en_GB-northern_english_male-medium.onnx.json"
+
+      - id: "en_gb_south_f"
+        label: "English (UK) – Southern female [F, low]"
+        gender: "female"
+        accent: "en_GB"
+        quality: "low"
+        voice_path: "models/piper/en_GB-southern_english_female-low.onnx"
+        voice_config: "models/piper/en_GB-southern_english_female-low.onnx.json"
+
+    es:
+      - id: "es_ar_daniela_f"
+        label: "Spanish (AR) – Daniela [F, high]"
+        gender: "female"
+        accent: "es_AR"
+        quality: "high"
+        voice_path: "models/piper/es_AR-daniela-high.onnx"
+        voice_config: "models/piper/es_AR-daniela-high.onnx.json"
+
+      - id: "es_mx_ald_m"
+        label: "Spanish (MX) – Ald [M, medium]"
+        gender: "male"
+        accent: "es_MX"
+        quality: "medium"
+        voice_path: "models/piper/es_MX-ald-medium.onnx"
+        voice_config: "models/piper/es_MX-ald-medium.onnx.json"
+
+      - id: "es_mx_claude_f"
+        label: "Spanish (MX) – Claude [F, high]"
+        gender: "female"
+        accent: "es_MX"
+        quality: "high"
+        voice_path: "models/piper/es_MX-claude-high.onnx"
+        voice_config: "models/piper/es_MX-claude-high.onnx.json"
+
+      - id: "es_es_sharvard_m"
+        label: "Spanish (ES) – Sharvard [M, medium]"
+        gender: "male"
+        accent: "es_ES"
+        quality: "medium"
+        voice_path: "models/piper/es_ES-sharvard-medium.onnx"
+        voice_config: "models/piper/es_ES-sharvard-medium.onnx.json"
+
+      - id: "es_es_carlfm_u"
+        label: "Spanish (ES) – CarlFM [M, low]"
+        gender: "unknown"
+        accent: "es_ES"
+        quality: "x_low"
+        voice_path: "models/piper/es_ES-carlfm-x_low.onnx"
+        voice_config: "models/piper/es_ES-carlfm-x_low.onnx.json"
