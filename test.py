@@ -1,14 +1,23 @@
-from app.translate import translate_text, _get_idiom_mapping, _tag_idioms
+# test.py (one level above app/)
+from app.translate import translate_text, _get_idiom_items, _tag_idioms_with_items
 
-s = "I'm feeling under the weather, break a leg tonight and don't spill the beans."
+sentences = [
+    "It's raining cats and dogs",
+    "It's raining cats and dogs.",
+    "It's raining cats and dogs so I should go inside.",
+    "I should go inside because it's raining cats and dogs."
+]
 
-mapping = _get_idiom_mapping("en", "es")
-print("idioms loaded:", len(mapping))
+# Get idiom items for EN->ES
+items = _get_idiom_items("en", "es")
+print("idioms loaded:", len(items))
 
-tagged, repls = _tag_idioms(s, mapping)
-print("TAGGED:", tagged)
-print("REPLS:", repls)
+for s in sentences:
+    print("\n---")
+    print("INPUT :", repr(s))
 
-print("FINAL:", translate_text(s, "en", "es"))
+    tagged = _tag_idioms_with_items(s, items)
+    print("TAGGED:", tagged)
 
-# this is just for debugging idiom mappings
+    final = translate_text(s, "en", "es")
+    print("FINAL :", final)
